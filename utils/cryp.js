@@ -1,7 +1,7 @@
 const crypto = require('crypto')
 
 // 密匙
-const SECRET_KEY = 'WJiol_8776#'
+const SECRET_KEY = 'li_jpkey_8776#~'
 
 // md5 加密
 function md5(content) {

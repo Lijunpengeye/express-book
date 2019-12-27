@@ -1,7 +1,7 @@
 const { exec, sql, transaction } = require('../db/mysqls')
 const xss = require('xss')
 const { genPassword } = require('../utils/cryp')
-const { secretKey } = require('../utils/constant')
+const { secretKey } = require('../utils/index')
 const jwt = require('jsonwebtoken')
 const adminLogin = (username, password) => {
   username = username
@@ -22,7 +22,7 @@ const adminLogin = (username, password) => {
       }
       let tokenKey = secretKey  //加密内容
       let token = jwt.sign(tokenObj, tokenKey, {
-        expiresIn: 3600   // token时长
+        expiresIn: 3600 * 3  // token时长
       })
       token = 'Bearer ' + token
       let parameter = {

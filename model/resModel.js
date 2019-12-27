@@ -17,16 +17,16 @@ class BaseModel {
 }
 
 class SuccessModel extends BaseModel {
-    constructor(data, message) {
-        super(data, message)
-        this.code = 0
+    constructor(data, message, code) {
+        super(data, message, code)
+        this.code = code ? code : 0
     }
 }
 
 class ErrorModel extends BaseModel {
-    constructor(data, message) {
-        super(data, message)
-        this.code = -1
+    constructor(data, message, code) {
+        super(data, message, code)
+        this.code = code ? code : -1
     }
 }
 
