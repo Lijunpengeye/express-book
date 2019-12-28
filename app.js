@@ -5,10 +5,11 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-const { SuccessModel, ErrorModel } = require('./model/resModel')
-const { jwtAuth } = require('./utils/index')
+const { SuccessModel, ErrorModel } = require('./model/resModel');
+const { jwtAuth } = require('./utils/index');
 const bookRouter = require('./routes/book');
-const commonRouter = require('./routes/common')
+const commonRouter = require('./routes/common');
+const bannerRouter = require('./routes/banner');
 const cors = require('cors')
 
 var app = express();
@@ -41,6 +42,7 @@ app.use('/', indexRouter);
 app.use('/common', commonRouter)
 app.use('/users', usersRouter);
 app.use('/book', bookRouter)
+app.use('/banner', bannerRouter)
 
 
 app.use(function (req, res, next) {

@@ -6,22 +6,28 @@ async function getBookList(query) {
   let pageSize = query.pageSize ? query.pageSize : 20
   let pageNum = query.pageNum ? query.pageNum : 1
   let start_from = (pageNum - 1) * pageSize
-  let pageSql = `SELECT * FROM newbook LIMIT ${start_from}, ${pageSize}`;
+  let pageSql = `SELECT b.id ,b.bookname,b.is_free, 
+  b.images, b.author, b.sortid, b.createtime,
+  b.is_display ,b.description,b.price,s.sortname
+  FROM book b 
+  INNER JOIN sort s ON b.sortid = s.id  
+  ORDER BY createtime DESC
+   LIMIT ${start_from}, ${pageSize}`
   let data = {}
   let pagePromiste = await exec(pageSql)
   data.list = pagePromiste
-  let totalPromiste = await exec(sql.table('newbook').where().select())
+  let totalPromiste = await exec(sql.table('book').where().select())
   data.total = totalPromiste.length
   return Promise.resolve(data)
 }
 
 // 获取获取书本详情
 async function getBookDetails(id) {
-  return exec(sql.table('newbook').where({ id: id }).select()).then(data => {
+  return exec(sql.table('book').where({ id: id }).select()).then(data => {
     return data[0]
   })
   // console.log('-------------', id)
-  // let sql = `select * from newbook where id=${id}`
+  // let sql = `select * from book where id=${id}`
   // console.log(sql)
   // return exec(sql).then(data => {
   //   return data[0]
@@ -31,34 +37,26 @@ async function getBookDetails(id) {
 
 // 新增书本
 async function addBook(query) {
-  let { bookname, sortid, type, descs, author, imageName } = query
-  if (type) {
-    type = 1
-  } else {
-    type = 0
-  }
-  bookname = xss(bookname)
-  sortid = xss(sortid)
-  descs = xss(descs)
-  author = xss(author)
-  let createtime = Date.now()
+  let createtime = new Date()
   let parameter = {
-    bookname: bookname,
-    sortid: sortid,
-    descs: descs,
-    author: author,
+    bookname: xss(query.bookname),
+    sortid: query.sortid,
+    description: xss(query.description),
+    author: xss(query.author),
     createtime: createtime,
-    images: imageName,
-    type: type
+    images: xss(query.imagesName),
+    price: xss(query.price),
+    is_free: xss(query.is_free),
+    is_display: xss(query.is_display)
   }
-  return exec(sql.table('newbook').data(parameter).insert()).then(insertData => {
+  return exec(sql.table('book').data(parameter).insert()).then(insertData => {
     return {
       id: insertData.insertId
     }
   })
   // const sql = `
-  //       insert into newbook (bookname, sortid, type, descs, author, createtime, images)
-  //       values ('${bookname}', '${sortid}', '${type}', '${descs}', '${author}', '${createtime}', '${imageName}');
+  //       insert into book (bookname, sortid, type, description, author, createtime, images)
+  //       values ('${bookname}', '${sortid}', '${type}', '${description}', '${author}', '${createtime}', '${imageName}');
   //   `
   // return exec(sql).then(insertData => {
   //   return {
@@ -70,20 +68,15 @@ async function addBook(query) {
 
 // 更新上架状态
 async function updateType(query) {
-  let { id, type } = query
-  if (type) {
-    type = 1
-  } else {
-    type = 0
-  }
-  return exec(sql.table('newbook').data({ type: type }).where({ id: id }).update()).then(updateData => {
+  let { id } = query
+  return exec(sql.table('book').data({ is_display: xss(query.is_display) }).where({ id: id }).update()).then(updateData => {
     if (updateData.affectedRows > 0) {
       return true
     }
     return false
   })
   // const sql = `
-  //       update newbook set type=${type} where id=${id} 
+  //       update book set type=${type} where id=${id} 
   //   `
   // return exec(sql).then(updateData => {
   //   if (updateData.affectedRows > 0) {
@@ -96,39 +89,32 @@ async function updateType(query) {
 
 // 更新书本信息
 async function updateBook(query) {
-  let { bookname, sortid, type, descs, author, imageName, id } = query
-  if (type) {
-    type = 1
-  } else {
-    type = 0
-  }
-  bookname = xss(bookname)
-  sortid = xss(sortid)
-  descs = xss(descs)
-  author = xss(author)
-  let uptime = Date.now()
+  let { id, imageName } = query
+  let uptime = new Date()
   let parameter = {
-    bookname: bookname,
-    sortid: sortid,
-    descs: descs,
-    author: author,
-    type: type,
-    uptime: uptime
+    bookname: xss(query.bookname),
+    sortid: query.sortid,
+    description: xss(query.description),
+    author: xss(query.author),
+    uptime: uptime,
+    is_display: xss(query.is_display),
+    price: xss(query.price),
+    is_free: xss(query.is_free),
   }
   if (imageName) parameter.images = imageName
-  return exec(sql.table('newbook').data(parameter).where({ id: id }).update()).then(updateData => {
+  return exec(sql.table('book').data(parameter).where({ id: id }).update()).then(updateData => {
     if (updateData.affectedRows > 0) {
       return true
     }
     return false
   })
   // let sql = `
-  //       update newbook set 
+  //       update book set 
   //       bookname='${bookname}',
   //       sortid=${sortid}, 
   //       type=${type},
   //       author='${author}',
-  //       descs='${descs}',`
+  //       description='${description}',`
   // if (imageName) {
   //   sql += ` images='${imageName}',`
   // }
@@ -144,10 +130,18 @@ async function updateBook(query) {
   // })
 }
 
+// 获取分类详情
+async function getSortType() {
+  return exec(sql.table('sort').select()).then(data => {
+    return data
+  })
+}
+
 module.exports = {
   getBookList,
   addBook,
   updateType,
   getBookDetails,
-  updateBook
+  updateBook,
+  getSortType
 }
