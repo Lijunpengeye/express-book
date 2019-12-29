@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const { SuccessModel, ErrorModel } = require('../model/resModel')
-const { adminLogin } = require('../controller/user')
+const { adminLogin, uaersInfo } = require('../controller/user')
 
 /* GET users listing. */
 // router.get('/', function (req, res, next) {
@@ -23,8 +23,22 @@ router.post('/admin/login', function (req, res, next) {
       )
     }
   })
-  // res.send('respond with a resource');
 });
 
+
+router.get('/usersinfo', function (req, res, next) {
+  const result = uaersInfo(req.query)
+  result.then(data => {
+    if (data) {
+      res.json(
+        new SuccessModel(data)
+      )
+    } else {
+      res.json(
+        new ErrorModel(data, '操作失败')
+      )
+    }
+  })
+});
 
 module.exports = router;

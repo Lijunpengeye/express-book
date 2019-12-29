@@ -7,7 +7,7 @@ async function getBookList(query) {
   let pageNum = query.pageNum ? query.pageNum : 1
   let start_from = (pageNum - 1) * pageSize
   let pageSql = `SELECT b.id ,b.bookname,b.is_free, 
-  b.images, b.author, b.sortid, b.createtime,
+  b.images, b.author, b.sortid, b.createtime, b.vip_price,
   b.is_display ,b.description,b.price,s.sortname
   FROM book b 
   INNER JOIN sort s ON b.sortid = s.id  
@@ -47,7 +47,8 @@ async function addBook(query) {
     images: xss(query.imagesName),
     price: xss(query.price),
     is_free: xss(query.is_free),
-    is_display: xss(query.is_display)
+    is_display: xss(query.is_display),
+    vip_price: xss(query.vip_price),
   }
   return exec(sql.table('book').data(parameter).insert()).then(insertData => {
     return {
@@ -100,6 +101,7 @@ async function updateBook(query) {
     is_display: xss(query.is_display),
     price: xss(query.price),
     is_free: xss(query.is_free),
+    vip_price: xss(query.vip_price),
   }
   if (imageName) parameter.images = imageName
   return exec(sql.table('book').data(parameter).where({ id: id }).update()).then(updateData => {
