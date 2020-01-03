@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const { SuccessModel, ErrorModel } = require('../model/resModel')
-const { adminLogin, uaersInfo } = require('../controller/user')
+const { adminLogin, uaersInfo } = require('../controllerAdmin/user')
 
 /* GET users listing. */
 // router.get('/', function (req, res, next) {

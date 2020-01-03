@@ -14,8 +14,8 @@ async function adminLogin(username, password) {
   let promiste = {
     username: username,
     password: password,
-    logintime: logintime
   }
+
   return exec(sql.table('admin').where(promiste).select()).then(data => {
     if (data.length > 0) {
       let userInfo = data[0]
@@ -31,6 +31,7 @@ async function adminLogin(username, password) {
       let parameter = {
         token: token
       }
+      exec(sql.table('amdin').data({ logintime: logintime }).where({ id: userInfo.id }).update())
       return Promise.resolve(parameter)
       // return true
     } else {

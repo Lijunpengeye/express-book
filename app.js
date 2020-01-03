@@ -3,13 +3,18 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+
+// admin 路由
+var indexRouter = require('./routesAdmin/index');
+var usersRouter = require('./routesAdmin/users');
+const bookRouter = require('./routesAdmin/book');
+const commonRouter = require('./routesAdmin/common');
+const bannerRouter = require('./routesAdmin/banner');
+
+// wab 路由
+
 const { SuccessModel, ErrorModel } = require('./model/resModel');
 const { jwtAuth } = require('./utils/index');
-const bookRouter = require('./routes/book');
-const commonRouter = require('./routes/common');
-const bannerRouter = require('./routes/banner');
 const cors = require('cors')
 
 var app = express();
@@ -26,7 +31,6 @@ app.use(cors());
 
 app.use(jwtAuth)
 app.use(function (err, req, res, next) {
-  console.log(err)
   if (err.status == 401) {
     res.json(
       new ErrorModel({}, 'token失效，请重新登录！', 401)

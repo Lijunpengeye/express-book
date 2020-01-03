@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const { SuccessModel, ErrorModel } = require('../model/resModel')
-const { getBookList, getBookDetails, addBook, updateType, updateBook, getSortType } = require('../controller/book')
+const { getBookList, getBookDetails, addBook, updateType, updateBook, getSortType } = require('../controllerAdmin/book')
 
 
 /* GET home page. */

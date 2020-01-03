@@ -7,7 +7,7 @@ const {
   updateBanner,
   updateIsDisplay,
   getBannerDetails
-} = require('../controller/banner')
+} = require('../controllerAdmin/banner')
 
 router.get('/list', function (req, res, next) {
   let result = getBanner(req.query)

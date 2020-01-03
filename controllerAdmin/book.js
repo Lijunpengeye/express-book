@@ -6,13 +6,14 @@ async function getBookList(query) {
   let pageSize = query.pageSize ? query.pageSize : 20
   let pageNum = query.pageNum ? query.pageNum : 1
   let start_from = (pageNum - 1) * pageSize
-  let pageSql = `SELECT b.id ,b.bookname,b.is_free, 
+  let pageSql = `SELECT b.id ,b.bookname,b.is_free, b.renqun_type,
   b.images, b.author, b.sortid, b.createtime, b.vip_price,
-  b.is_display ,b.description,b.price,s.sortname
+  b.is_display ,b.description,b.price,s.sortname,t.title
   FROM book b 
   INNER JOIN sort s ON b.sortid = s.id  
+  INNER JOIN book_type t ON b.book_type_id = t.type_id
   ORDER BY createtime DESC
-   LIMIT ${start_from}, ${pageSize}`
+  LIMIT ${start_from}, ${pageSize}`
   let data = {}
   let pagePromiste = await exec(pageSql)
   data.list = pagePromiste
@@ -44,11 +45,15 @@ async function addBook(query) {
     description: xss(query.description),
     author: xss(query.author),
     createtime: createtime,
-    images: xss(query.imagesName),
-    price: xss(query.price),
+    images: xss(query.imageName),
     is_free: xss(query.is_free),
     is_display: xss(query.is_display),
-    vip_price: xss(query.vip_price),
+    book_type_id: xss(query.book_type_id),
+    renqun_type: xss(query.renqun_type)
+  }
+  if (query.is_free === 'N') {
+    parameter.price = xss(query.price)
+    parameter.vip_price = xss(query.vip_price)
   }
   return exec(sql.table('book').data(parameter).insert()).then(insertData => {
     return {
@@ -99,9 +104,13 @@ async function updateBook(query) {
     author: xss(query.author),
     uptime: uptime,
     is_display: xss(query.is_display),
-    price: xss(query.price),
     is_free: xss(query.is_free),
-    vip_price: xss(query.vip_price),
+    book_type_id: xss(query.book_type_id),
+    renqun_type: xss(query.renqun_type)
+  }
+  if (query.is_free === 'N') {
+    parameter.price = xss(query.price)
+    parameter.vip_price = xss(query.vip_price)
   }
   if (imageName) parameter.images = imageName
   return exec(sql.table('book').data(parameter).where({ id: id }).update()).then(updateData => {
@@ -139,11 +148,19 @@ async function getSortType() {
   })
 }
 
+// 获取书本在前端显示的分类
+async function getBookType() {
+  return exec(sql.table('book_type').select()).then(data => {
+    return data
+  })
+}
+
 module.exports = {
   getBookList,
   addBook,
   updateType,
   getBookDetails,
   updateBook,
-  getSortType
+  getSortType,
+  getBookType,
 }
