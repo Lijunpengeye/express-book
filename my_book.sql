@@ -1,7 +1,7 @@
 /*
- Navicat Premium Data Transfer
+ Navicat MySQL Data Transfer
 
- Source Server         : localhost
+ Source Server         : myblog
  Source Server Type    : MySQL
  Source Server Version : 50726
  Source Host           : localhost:3306
@@ -11,7 +11,7 @@
  Target Server Version : 50726
  File Encoding         : 65001
 
- Date: 30/12/2019 13:23:13
+ Date: 06/01/2020 13:37:06
 */
 
 SET NAMES utf8mb4;
@@ -33,6 +33,18 @@ CREATE TABLE `admin`  (
 -- Records of admin
 -- ----------------------------
 INSERT INTO `admin` VALUES (1, 'admin', 'ff57fddeb2732054faf38544f6049018', NULL);
+
+-- ----------------------------
+-- Table structure for author_uaers
+-- ----------------------------
+DROP TABLE IF EXISTS `author_uaers`;
+CREATE TABLE `author_uaers`  (
+  `author_id` int(11) NOT NULL,
+  `user_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '名称',
+  `cellphone` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL COMMENT '手机号',
+  `grade_id` int(10) NULL DEFAULT NULL COMMENT '等级id',
+  PRIMARY KEY (`author_id`) USING BTREE
+) ENGINE = MyISAM CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Table structure for banner
@@ -76,24 +88,48 @@ CREATE TABLE `book`  (
   `price` float(20, 1) NOT NULL DEFAULT 0.0 COMMENT '价格',
   `vip_price` float(10, 1) NULL DEFAULT 0.0 COMMENT 'vip价格',
   `is_free` varchar(255) CHARACTER SET gbk COLLATE gbk_chinese_ci NULL DEFAULT NULL COMMENT '是否免费 Y:免费 N:付费',
+  `renqun_type` varchar(255) CHARACTER SET gbk COLLATE gbk_chinese_ci NULL DEFAULT NULL COMMENT '男-女 M:男 W女',
+  `book_type_id` int(11) NULL DEFAULT NULL COMMENT '书本前端显示类型',
   PRIMARY KEY (`id`) USING BTREE
-) ENGINE = MyISAM AUTO_INCREMENT = 16 CHARACTER SET = gbk COLLATE = gbk_chinese_ci ROW_FORMAT = Dynamic;
+) ENGINE = MyISAM AUTO_INCREMENT = 20 CHARACTER SET = gbk COLLATE = gbk_chinese_ci ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of book
 -- ----------------------------
-INSERT INTO `book` VALUES (1, '我的书本42', '/1577506514378.png', '风花雪月42', 1, '2019-12-28 21:16:08.668767', 'Y', '简介一42', '2019-12-29 11:36:46.727025', 10.0, 10.0, 'N');
-INSERT INTO `book` VALUES (6, '我的书本', '/1577506652434.jpg', '风花雪月', 1, '2019-12-28 21:16:08.682229', 'Y', '简介一简介一简介一简介一11', '2019-12-29 11:36:48.508490', 20.5, 10.0, 'N');
-INSERT INTO `book` VALUES (5, '新增书籍', '/1577506541758.jpg', '我的名字', 1, '2019-12-28 21:16:08.683525', 'Y', '新增简介简介简介简介简介简介新增简介简介简介简介简介简介', '2019-12-29 11:36:39.513114', 0.0, 0.0, 'Y');
-INSERT INTO `book` VALUES (7, '新增二书', '/1577506556098.jpg', '我的名字2', 2, '2019-12-28 21:16:08.685303', 'Y', '简介一简介一简介一简介一', '2019-12-29 11:36:42.417391', 0.0, 0.0, 'Y');
-INSERT INTO `book` VALUES (8, '我的书本', '/1577506566851.jpg', '风花雪月', 1, '2019-12-28 21:16:08.687120', 'Y', '简介一', '2019-12-29 11:36:40.938620', 0.0, 0.0, 'Y');
-INSERT INTO `book` VALUES (9, 'mysqls', '/1577506576788.jpg', '测试', 2, '2019-12-28 21:16:08.688536', 'Y', 'mysqlsmysqlsmysqlsmysqls', '2019-12-29 11:38:39.067600', 0.0, 0.0, 'Y');
-INSERT INTO `book` VALUES (10, '新增2', '/1577507702896.jpg', '我d', 2, '2019-12-28 21:16:08.690195', 'Y', '上帝1111111', '2019-12-29 11:36:51.849108', 2.0, 10.0, 'N');
-INSERT INTO `book` VALUES (11, '历史', '/1577511472592.jpg', '历史', 4, '2019-12-28 21:16:08.692500', 'Y', '历史历史历史历史历史', '2019-12-29 11:36:52.457672', 11.0, 10.0, 'N');
-INSERT INTO `book` VALUES (12, '测试时间', '/1577538682851.jpg', '测试时间', 4, '2019-12-28 21:15:25.994000', 'Y', '测试时间测试时间测试时间', '2019-12-29 11:36:53.099337', 10.0, 10.0, NULL);
-INSERT INTO `book` VALUES (13, '66666', '/1577543735325.jpg', '666', 4, '2019-12-28 22:35:37.566000', 'Y', '232388888', '2019-12-29 11:36:53.630503', 23.0, 10.0, 'Y');
-INSERT INTO `book` VALUES (14, '12323', '/1577544870475.jpg', '23232', 5, '2019-12-28 22:46:39.353000', 'Y', '2323', '2019-12-29 11:36:54.204797', 23.0, 10.0, 'N');
-INSERT INTO `book` VALUES (15, 'CEFEEC', '/1577545663190.jpg', 'ECEEC', 2, '2019-12-28 23:07:34.437000', 'N', '323232', '2019-12-29 11:36:58.045327', 12.0, 10.0, 'N');
+INSERT INTO `book` VALUES (1, '我的书本42', '/1577506514378.png', '风花雪月42', 1, '2019-12-28 21:16:08.668767', 'Y', '简介一42', '2020-01-03 11:33:02.433714', 10.0, 10.0, 'N', 'M', 1);
+INSERT INTO `book` VALUES (6, '我的书本', '/1577506652434.jpg', '风花雪月', 1, '2019-12-28 21:16:08.682229', 'Y', '简介一简介一简介一简介一11', '2020-01-03 11:33:03.138879', 20.5, 10.0, 'N', 'W', 2);
+INSERT INTO `book` VALUES (5, '新增书籍', '/1577506541758.jpg', '我的名字', 1, '2019-12-28 21:16:08.683525', 'Y', '新增简介简介简介简介简介简介新增简介简介简介简介简介简介', '2020-01-03 11:33:03.861614', 0.0, 0.0, 'Y', 'M', 3);
+INSERT INTO `book` VALUES (7, '新增二书', '/1577506556098.jpg', '我的名字2', 2, '2019-12-28 21:16:08.685303', 'Y', '简介一简介一简介一简介一', '2020-01-03 11:33:04.594407', 0.0, 0.0, 'Y', 'W', 4);
+INSERT INTO `book` VALUES (8, '我的书本', '/1577506566851.jpg', '风花雪月', 1, '2019-12-28 21:16:08.687120', 'Y', '简介一', '2020-01-03 11:33:05.649188', 0.0, 0.0, 'Y', 'M', 1);
+INSERT INTO `book` VALUES (9, 'mysqls', '/1577506576788.jpg', '测试', 2, '2019-12-28 21:16:08.688536', 'Y', 'mysqlsmysqlsmysqlsmysqls', '2020-01-03 11:33:06.463880', 0.0, 0.0, 'Y', 'W', 2);
+INSERT INTO `book` VALUES (10, '新增2', '/1577507702896.jpg', '我d', 2, '2019-12-28 21:16:08.690195', 'Y', '上帝1111111', '2020-01-03 11:33:07.297349', 2.0, 10.0, 'N', 'M', 3);
+INSERT INTO `book` VALUES (11, '历史', '/1577511472592.jpg', '历史', 4, '2019-12-28 21:16:08.692500', 'Y', '历史历史历史历史历史', '2020-01-03 11:33:08.275489', 11.0, 10.0, 'N', 'W', 4);
+INSERT INTO `book` VALUES (12, '测试时间', '/1577538682851.jpg', '测试时间', 4, '2019-12-28 21:15:25.994000', 'Y', '测试时间测试时间测试时间', '2020-01-03 11:33:09.722913', 10.0, 10.0, 'N', 'M', 1);
+INSERT INTO `book` VALUES (13, '66666', '/1577543735325.jpg', '666', 4, '2019-12-28 22:35:37.566000', 'Y', '232388888', '2020-01-03 11:33:10.570993', 23.0, 10.0, 'Y', 'W', 2);
+INSERT INTO `book` VALUES (14, '12323', '/1577544870475.jpg', '23232', 5, '2019-12-28 22:46:39.353000', 'Y', '2323', '2020-01-03 11:33:11.466366', 23.0, 10.0, 'N', 'M', 3);
+INSERT INTO `book` VALUES (15, 'CEFEEC', '/1577545663190.jpg', 'ECEEC', 2, '2019-12-28 23:07:34.437000', 'N', '323232', '2020-01-03 11:33:13.042966', 12.0, 10.0, 'N', 'W', 4);
+INSERT INTO `book` VALUES (16, 'asdfa', '/1577545663190.jpg', 'asdf', 1, '2020-01-03 11:57:41.944000', 'Y', 'sadfadf', '2020-01-03 12:07:39.861911', 10.0, 5.0, 'N', NULL, 2);
+INSERT INTO `book` VALUES (17, 'erewr', '/1577545663190.jpg', 'ewrw', 2, '2020-01-03 12:05:10.297000', 'Y', 'werwer', '2020-01-03 12:07:40.901424', 0.0, 0.0, 'Y', 'W', 3);
+INSERT INTO `book` VALUES (18, '343', '', '432', 3, '2020-01-03 12:07:09.742000', 'Y', '23423', NULL, 0.0, 0.0, 'Y', 'M', 1);
+INSERT INTO `book` VALUES (19, 'cccc', '/1578024491459.jpg', 'ccc', 5, '2020-01-03 12:08:13.193000', 'Y', 'cdcdc', '2020-01-03 12:10:47.615000', 23.0, 2.0, 'N', 'W', 3);
+
+-- ----------------------------
+-- Table structure for book_type
+-- ----------------------------
+DROP TABLE IF EXISTS `book_type`;
+CREATE TABLE `book_type`  (
+  `type_id` int(11) NOT NULL,
+  `title` varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL,
+  PRIMARY KEY (`type_id`) USING BTREE
+) ENGINE = MyISAM CHARACTER SET = utf8 COLLATE = utf8_general_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Records of book_type
+-- ----------------------------
+INSERT INTO `book_type` VALUES (1, '白金作品');
+INSERT INTO `book_type` VALUES (2, '主编力荐');
+INSERT INTO `book_type` VALUES (3, '新作抢读');
+INSERT INTO `book_type` VALUES (4, '限时免费');
 
 -- ----------------------------
 -- Table structure for order
