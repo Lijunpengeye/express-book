@@ -5,13 +5,14 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 // admin 路由
-var indexRouter = require('./routesAdmin/index');
-var usersRouter = require('./routesAdmin/users');
-const bookRouter = require('./routesAdmin/book');
-const commonRouter = require('./routesAdmin/common');
-const bannerRouter = require('./routesAdmin/banner');
+const indexRouterAdmin = require('./routesAdmin/index');
+const usersRouterAdmin = require('./routesAdmin/users');
+const bookRouterAdmin = require('./routesAdmin/book');
+const commonRouterAdmin = require('./routesAdmin/common');
+const bannerRouterAdmin = require('./routesAdmin/banner');
 
 // wab 路由
+const indexRouterWab = require('./routesWab/index');
 
 const { SuccessModel, ErrorModel } = require('./model/resModel');
 const { jwtAuth } = require('./utils/index');
@@ -42,11 +43,16 @@ app.get('/public/upload/*', function (req, res) {
   console.log("Request for " + req.url + " received.");
 })
 
-app.use('/', indexRouter);
-app.use('/common', commonRouter)
-app.use('/users', usersRouter);
-app.use('/book', bookRouter)
-app.use('/banner', bannerRouter)
+// 后台路由
+app.use('/', indexRouterAdmin);
+app.use('/common', commonRouterAdmin)
+app.use('/users', usersRouterAdmin);
+app.use('/book', bookRouterAdmin)
+app.use('/banner', bannerRouterAdmin)
+
+
+// wab路由
+app.use('/wab/index', indexRouterWab);
 
 
 app.use(function (req, res, next) {
