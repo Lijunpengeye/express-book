@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 const { SuccessModel, ErrorModel } = require('../model/resModel')
-const { getBookList, getBookDetails, addBook, updateType, updateBook, getSortType } = require('../controllerAdmin/book')
+const { getBookList, getBookDetails, addBook, updateType, updateBook, getSortType, getBookType } = require('../controllerAdmin/book')
 
 
 /* GET home page. */
@@ -77,6 +77,15 @@ router.post('/updateType', function (req, res, next) {
 
 router.get('/sort', function (req, res, next) {
   let result = getSortType()
+  result.then(data => {
+    res.json(
+      new SuccessModel(data)
+    )
+  })
+})
+
+router.get('/booktype', function (req, res, next) {
+  let result = getBookType()
   result.then(data => {
     res.json(
       new SuccessModel(data)

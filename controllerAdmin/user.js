@@ -42,18 +42,11 @@ async function adminLogin(username, password) {
   })
 }
 
-async function uaersInfo(query) {
-  let parameter = {}
-  if (query.username) parameter.username = query.username
-  let pageSize = query.pageSize ? query.pageSize : 20
-  let pageNum = query.pageNum ? query.pageNum : 1
-  let field = `id,username,qq,nickname,head_portrait,logintime,is_vip`
-  let pagePromiste = await exec(sql.table('users').field(field).where(parameter).page(pageNum, pageSize).select())
-  let data = {}
-  data.list = pagePromiste
-  let totalPromiste = await exec(sql.table('users').where(parameter).select())
-  data.total = totalPromiste.length
-  return Promise.resolve(data)
+async function uaersInfo(req) {
+  let id = req.user.id
+  return exec(sql.table('admin').where({ id: id }).field('username,avatar').select()).then(data => {
+    return data[0]
+  })
 }
 
 module.exports = {
