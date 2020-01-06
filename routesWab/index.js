@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 const { SuccessModel, ErrorModel } = require('../model/resModel')
 const { getBanner } = require('../controllerWab/banner')
+const { getIndexBookList } = require('../controllerWab/index')
 
 router.get('/banner', function (req, res, next) {
   let result = getBanner(req.query)
@@ -14,5 +15,14 @@ router.get('/banner', function (req, res, next) {
     )
   })
 });
+
+router.get('/booklist', function (req, res, next) {
+  let result = getIndexBookList(req.query)
+  result.then(data => {
+    res.json(
+      new SuccessModel(data)
+    )
+  })
+})
 
 module.exports = router

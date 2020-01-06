@@ -13,6 +13,7 @@ const bannerRouterAdmin = require('./routesAdmin/banner');
 
 // wab 路由
 const indexRouterWab = require('./routesWab/index');
+const bookRouterWab = require('./routesWab/book');
 
 const { SuccessModel, ErrorModel } = require('./model/resModel');
 const { jwtAuth } = require('./utils/index');
@@ -53,7 +54,7 @@ app.use('/banner', bannerRouterAdmin)
 
 // wab路由
 app.use('/wab/index', indexRouterWab);
-
+app.use('/wab/book', bookRouterWab);
 
 app.use(function (req, res, next) {
   next(createError(404));
