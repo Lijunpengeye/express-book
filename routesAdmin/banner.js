@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-const { SuccessModel, ErrorModel } = require('../model/resModel')
 const {
   getBanner,
   addBanner,
@@ -13,7 +12,7 @@ router.get('/list', function (req, res, next) {
   let result = getBanner(req.query)
   result.then(data => {
     res.json(
-      new SuccessModel(data)
+      new this.SuccessModel(data)
     )
   })
 });
@@ -23,7 +22,7 @@ router.get('/getBannerDetails', function (req, res, next) {
   let result = getBannerDetails(id)
   result.then(data => {
     res.json(
-      new SuccessModel(data)
+      new this.SuccessModel(data)
     )
   })
 });
@@ -34,11 +33,11 @@ router.post('/add', function (req, res, next) {
   result.then(data => {
     if (data.id) {
       res.json(
-        new SuccessModel(data)
+        new this.SuccessModel(data)
       )
     } else {
       res.json(
-        new ErrorModel(data, '操作失败')
+        new this.ErrorModel(data, '操作失败')
       )
     }
   })
@@ -50,11 +49,11 @@ router.post('/update', function (req, res, next) {
   result.then(data => {
     if (data) {
       res.json(
-        new SuccessModel(data)
+        new this.SuccessModel(data)
       )
     } else {
       res.json(
-        new ErrorModel(data, '操作失败')
+        new this.ErrorModel(data, '操作失败')
       )
     }
   })
@@ -67,11 +66,11 @@ router.post('/updateIsDisplay', function (req, res, next) {
   result.then(data => {
     if (data) {
       res.json(
-        new SuccessModel(data)
+        new this.SuccessModel(data)
       )
     } else {
       res.json(
-        new ErrorModel(data, '操作失败')
+        new this.ErrorModel(data, '操作失败')
       )
     }
   })
@@ -82,7 +81,7 @@ router.post('/updateIsDisplay', function (req, res, next) {
 //   let result = getBookDetails(id)
 //   result.then(data => {
 //     res.json(
-//       new SuccessModel(data)
+//       new this.SuccessModel(data)
 //     )
 //   })
 // });
@@ -93,11 +92,11 @@ router.post('/updateIsDisplay', function (req, res, next) {
 //   result.then(data => {
 //     if (data) {
 //       res.json(
-//         new SuccessModel(data)
+//         new this.SuccessModel(data)
 //       )
 //     } else {
 //       res.json(
-//         new ErrorModel(data, '操作失败')
+//         new this.ErrorModel(data, '操作失败')
 //       )
 //     }
 //   })
@@ -110,11 +109,11 @@ router.post('/updateIsDisplay', function (req, res, next) {
 //   result.then(data => {
 //     if (data) {
 //       res.json(
-//         new SuccessModel(data)
+//         new this.SuccessModel(data)
 //       )
 //     } else {
 //       res.json(
-//         new ErrorModel(data, '操作失败')
+//         new this.ErrorModel(data, '操作失败')
 //       )
 //     }
 //   })
@@ -124,7 +123,7 @@ router.post('/updateIsDisplay', function (req, res, next) {
 //   let result = getSortType()
 //   result.then(data => {
 //     res.json(
-//       new SuccessModel(data)
+//       new this.SuccessModel(data)
 //     )
 //   })
 // })

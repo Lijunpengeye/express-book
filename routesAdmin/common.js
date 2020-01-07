@@ -3,7 +3,6 @@ var router = express.Router();
 var formidable = require('formidable')
 var path = require('path');
 var fs = require('fs')
-const { SuccessModel, ErrorModel } = require('../model/resModel')
 
 
 router.post("/upload", function (req, res, next) {
@@ -35,7 +34,7 @@ router.post("/upload", function (req, res, next) {
     data.url = `http://localhost:3000` + filedr + avatarName;
     datas.data = data
     res.json(
-      new SuccessModel(data, '上传图片成功')
+      new this.SuccessModel(data, '上传图片成功')
     )
     return;
   })

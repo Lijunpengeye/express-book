@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-const { SuccessModel, ErrorModel } = require('../model/resModel')
 const { getBookList, getBookDetails, addBook, updateType, updateBook, getSortType, getBookType } = require('../controllerAdmin/book')
 
 
@@ -16,7 +15,7 @@ router.get('/list', function (req, res, next) {
       }
     })
     res.json(
-      new SuccessModel(data)
+      new this.SuccessModel(data)
     )
   })
 });
@@ -26,7 +25,7 @@ router.post('/add', function (req, res, next) {
   let result = addBook(body)
   result.then(data => {
     res.json(
-      new SuccessModel(data)
+      new this.SuccessModel(data)
     )
   })
 });
@@ -37,7 +36,7 @@ router.get('/getBookDetails', function (req, res, next) {
   let result = getBookDetails(id)
   result.then(data => {
     res.json(
-      new SuccessModel(data)
+      new this.SuccessModel(data)
     )
   })
 });
@@ -48,11 +47,11 @@ router.post('/updateBook', function (req, res, next) {
   result.then(data => {
     if (data) {
       res.json(
-        new SuccessModel(data)
+        new this.SuccessModel(data)
       )
     } else {
       res.json(
-        new ErrorModel(data, '操作失败')
+        new this.ErrorModel(data, '操作失败')
       )
     }
   })
@@ -65,11 +64,11 @@ router.post('/updateType', function (req, res, next) {
   result.then(data => {
     if (data) {
       res.json(
-        new SuccessModel(data)
+        new this.SuccessModel(data)
       )
     } else {
       res.json(
-        new ErrorModel(data, '操作失败')
+        new this.ErrorModel(data, '操作失败')
       )
     }
   })
@@ -79,7 +78,7 @@ router.get('/sort', function (req, res, next) {
   let result = getSortType()
   result.then(data => {
     res.json(
-      new SuccessModel(data)
+      new this.SuccessModel(data)
     )
   })
 })
@@ -88,7 +87,7 @@ router.get('/booktype', function (req, res, next) {
   let result = getBookType()
   result.then(data => {
     res.json(
-      new SuccessModel(data)
+      new this.SuccessModel(data)
     )
   })
 })

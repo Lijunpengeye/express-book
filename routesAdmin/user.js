@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-const { SuccessModel, ErrorModel } = require('../model/resModel')
 const { adminLogin, uaersInfo } = require('../controllerAdmin/user')
 
 /* GET users listing. */
@@ -15,11 +14,11 @@ router.post('/admin/login', function (req, res, next) {
   result.then(data => {
     if (data) {
       res.json(
-        new SuccessModel(data)
+        new this.SuccessModel(data)
       )
     } else {
       res.json(
-        new ErrorModel(data, '操作失败')
+        new this.ErrorModel(data, '操作失败')
       )
     }
   })
@@ -32,11 +31,11 @@ router.get('/usersinfo', function (req, res, next) {
   result.then(data => {
     if (data) {
       res.json(
-        new SuccessModel(data)
+        new this.SuccessModel(data)
       )
     } else {
       res.json(
-        new ErrorModel(data, '操作失败')
+        new this.ErrorModel(data, '操作失败')
       )
     }
   })

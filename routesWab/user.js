@@ -1,17 +1,53 @@
 var express = require('express');
 var router = express.Router();
-const { SuccessModel, ErrorModel } = require('../model/resModel')
-const { getUserInfo } = require('../controllerWab/user')
-const { getIndexBookList } = require('../controllerWab/index')
-var jwt = require('jsonwebtoken')
+const { wabLogin, getUserInfo, buyBook } = require('../controllerWab/user')
+
+// 用户登陆
+router.post('/login', function (req, res, next) {
+  let username = req.body.username
+  let password = req.body.password
+  const result = wabLogin(username, password)
+  result.then(data => {
+    if (data) {
+      res.json(
+        new this.SuccessModel(data)
+      )
+    } else {
+      res.json(
+        new this.ErrorModel(data, '操作失败')
+      )
+    }
+  })
+})
+
+// 获取用户信息
 router.get('/userinfo', function (req, res, next) {
-  // let result = getUserInfo(req.query)
-  // result.then(data => {
-  //   data.forEach(item => {
-  //     item.banner_img = `http://localhost:3000/upload${item.banner_img}`
-  //   })
-  //   res.json(
-  //     new SuccessModel(data)
-  //   )
-  // })
+  const result = getUserInfo(req)
+  result.then(data => {
+    if (data) {
+      res.json(
+        new this.SuccessModel(data[0])
+      )
+    } else {
+      res.json(
+        new this.ErrorModel(data, '操作失败')
+      )
+    }
+  })
+})
+// 购买
+router.post('/buy', function (req, res, next) {
+  let result = buyBook(req)
+  result.then(data => {
+    console.log(data, '-------data')
+    res.json(
+      new this.SuccessModel(data, data.message)
+    )
+  }).catch(err => {
+    console.log(err, '-------err')
+    res.json(
+      new this.ErrorModel(err, err.message)
+    )
+  })
 });
+module.exports = router
