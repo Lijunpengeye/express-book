@@ -98,13 +98,12 @@ async function buyBook(req) {
   })
 }
 function randomNumber() {
-  const now = new Date()
-  let month = now.getMonth() + 1
-  let day = now.getDate()
-  let hour = now.getHours()
-  let minutes = now.getMinutes()
-  let seconds = now.getSeconds()
-  return now.getFullYear().toString() + month.toString() + day + hour + minutes + seconds + (Math.round(Math.random() * 89 + 100)).toString()
+  let outTradeNo = ''
+  for (var i = 0; i < 6; i++) {
+    outTradeNo += Math.floor(Math.random() * 10);
+  }
+  outTradeNo = new Date().getTime() + outTradeNo;
+  return outTradeNo
 }
 module.exports = {
   wabLogin,
