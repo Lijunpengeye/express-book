@@ -23,7 +23,7 @@ const cors = require('cors')
 
 var app = express();
 global.SuccessModel = SuccessModel
-global.ErrorModel = SuccessModel
+global.ErrorModel = ErrorModel
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');

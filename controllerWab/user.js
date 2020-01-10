@@ -46,6 +46,24 @@ async function getUserInfo(req) {
   return exec(sql.table('users').where({ id: id }).field('username,nickname,account,is_vip').select())
 }
 
+async function changeLike(res) {
+  let comment_id = res.body.comment_id
+  let user_id = res.user.id
+  let user_info = await exec(sql.table('user_info').where({ user_id: user_id }).field('like_book_comment').select())
+  let book_comment = await exec(sql.table('book_comment').where({ comment_id: comment_id }).select())
+  let likeNum = book_comment[0].like_number + 1
+  console.log(book_comment)
+  let like = user_info[0].like_book_comment
+  if (like) {
+    like += `,${comment_id}`
+  } else {
+    like = comment_id
+  }
+  exec(sql.table('user_info').data({ like_book_comment: like }).where({ user_id: user_id }).update()).then(data => {
+    return exec(sql.table('book_comment').data({ like_number: likeNum }).where({ comment_id: comment_id }).update())
+  })
+}
+
 
 async function buyBook(req) {
   return new Promise(async (resolve, reject) => {
@@ -108,5 +126,6 @@ function randomNumber() {
 module.exports = {
   wabLogin,
   getUserInfo,
-  buyBook
+  buyBook,
+  changeLike
 }
