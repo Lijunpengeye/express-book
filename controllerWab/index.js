@@ -9,7 +9,7 @@ async function getIndexBookList(query) {
   let obj = {}
   return new Promise((resolve, reject) => {
     bookType.map(async (item, index) => {
-      let book = await exec(sql.table('book').where({ book_type_id: item.type_id, renqun_type: renqun_type }).page(1, 10).select())
+      let book = await exec(sql.table('book').where({ book_type_id: item.type_id, renqun_type: renqun_type }).page(1, 5).select())
       obj = {
         title: item.title,
         list: book
