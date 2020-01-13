@@ -22,12 +22,24 @@ router.get('/detail', function (req, res, next) {
 // 获取个人收藏
 router.get('/collection', function (req, res, next) {
   let result = getCollection(req)
+  let Ip = getIPAddress()
   result.then(data => {
+    if (data.length) {
+      data.map(item => {
+        return item.images = `http://${Ip}:3000/upload${item.images}`
+      })
+    }
     res.json(
       new this.SuccessModel(data)
     )
+  }).catch(err => {
+    res.json(
+      new this.ErrorModel(err, err.message)
+    )
   })
 });
+
+
 // 获取搜索
 router.get('/search', function (req, res, next) {
   let result = querySearch(req)
@@ -42,7 +54,6 @@ router.get('/search', function (req, res, next) {
 router.post('/addbookshelf', function (req, res, next) {
   let result = addBookshelf(req)
   result.then(data => {
-    console.log(data, '----------')
     if (data.code === 0) {
       res.json(
         new this.SuccessModel(data)

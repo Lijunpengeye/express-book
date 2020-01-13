@@ -1,14 +1,6 @@
 const { exec, sql, transaction } = require('../db/mysqls')
 const xss = require('xss')
 
-// let pageSql = `SELECT b.id ,b.bookname,b.is_free, b.renqun_type,
-// b.images, b.author, b.sortid, b.createtime, b.vip_price,
-// b.is_display ,b.description,b.price,s.sortname,t.title
-// FROM book b 
-// INNER JOIN sort s ON b.sortid = s.id  
-// INNER JOIN book_type t ON b.book_type_id = t.type_id
-// ORDER BY createtime DESC
-// LIMIT ${start_from}, ${pageSize}`
 
 // 获取书本详情
 async function getBookDetail(req) {
@@ -59,6 +51,7 @@ async function getBookDetail(req) {
   return Promise.resolve(data)
 }
 
+// 收藏书本
 async function getCollection(req) {
   const userid = req.user.id
   const data = await exec(sql.table('user_info').where({ user_id: userid }).select());
@@ -71,11 +64,13 @@ async function getCollection(req) {
   }
 }
 
+// 搜索
 async function querySearch(req) {
   const title = req.query.title
   return exec(sql.table('book').where({ bookname: { like: `%${title}%` } }).select())
 }
 
+// 加入书架
 async function addBookshelf(req) {
   const user_id = req.user.id
   const book_id = req.body.book_id
@@ -105,6 +100,7 @@ async function addBookshelf(req) {
   }
 }
 
+// 新增书本评论
 async function addcomment(req) {
   const book_id = req.body.book_id
   const content = req.body.comment
@@ -128,10 +124,28 @@ async function addcomment(req) {
   })
 }
 
+// 获取个人书架
+// async function getUserBookshelf(req) {
+//   const user_id = req.user.id
+//   const userInfo = await exec(sql.table('users').where({ id: user_id }).field('collection_book_ids').select())
+//   const collection_book_ids = userInfo[0].collection_book_ids
+//   let bookids = []
+//   if (collection_book_ids) {
+//     bookids = userInfo[0].collection_book_ids.split(",");
+//   }
+//   if (bookids.length) {
+//     let data = bookids.map(async (item) => {
+//       let book_info = await exec(sql.table('book').where({ id: item }).select)
+//       return book_info[0]
+//     })
+//   } else {
+//     return Promise.resolve([])
+//   }
+// }
 module.exports = {
   getBookDetail,
   getCollection,
   querySearch,
   addcomment,
-  addBookshelf
+  addBookshelf,
 }
