@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const { getBookDetail, getCollection, querySearch, addBookshelf } = require('../controllerWab/book')
+const { getBookDetail, getCollection, querySearch, addBookshelf, addcomment } = require('../controllerWab/book')
 const { getIPAddress } = require('../utils/common')
 
 // 获取书本详情
@@ -59,5 +59,18 @@ router.post('/addbookshelf', function (req, res, next) {
   })
 });
 
+// 添加评论
+router.post('/addcomment', function (req, res, next) {
+  let result = addcomment(req)
+  result.then(data => {
+    res.json(
+      new this.SuccessModel(data)
+    )
+  }).catch(err => {
+    res.json(
+      new this.ErrorModel(err, err.message)
+    )
+  })
+});
 
 module.exports = router

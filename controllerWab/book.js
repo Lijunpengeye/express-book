@@ -105,9 +105,33 @@ async function addBookshelf(req) {
   }
 }
 
+async function addcomment(req) {
+  const book_id = req.body.book_id
+  const content = req.body.comment
+  const user_id = req.user.id
+  let userInfo = await exec(sql.table('users').where({ id: user_id }).field('nickname,head_portrait').select())
+  const nick_name = userInfo[0].nickname
+  const head_portrait = userInfo[0].head_portrait
+  const createtime = new Date()
+  let data = {
+    user_id: user_id,
+    book_id: book_id,
+    nick_name: nick_name,
+    content: content,
+    createtime: createtime,
+    head_portrait: head_portrait
+  }
+  return exec(sql.table('book_comment').data(data).insert()).then(insertData => {
+    return {
+      id: insertData.insertId
+    }
+  })
+}
+
 module.exports = {
   getBookDetail,
   getCollection,
   querySearch,
+  addcomment,
   addBookshelf
 }

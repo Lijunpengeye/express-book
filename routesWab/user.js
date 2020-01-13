@@ -57,7 +57,7 @@ router.post('/commentlike', function (req, res, next) {
   result.then(data => {
     console.log(data, '-------data')
     res.json(
-      new this.SuccessModel(data, data.message)
+      new this.SuccessModel(data)
     )
   }).catch(err => {
     console.log(err, '-------err')
