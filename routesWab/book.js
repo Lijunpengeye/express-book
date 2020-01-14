@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const { getBookDetail, getCollection, querySearch, addBookshelf, addcomment } = require('../controllerWab/book')
+const { getBookDetail, getCollection, querySearch, addBookshelf, addcomment, deleteCollection, bookRanking } = require('../controllerWab/book')
 const { getIPAddress } = require('../utils/common')
 
 // 获取书本详情
@@ -83,5 +83,41 @@ router.post('/addcomment', function (req, res, next) {
     )
   })
 });
+
+// 收藏中移除某书本
+router.post('/deletecollection', function (req, res, next) {
+  let result = deleteCollection(req)
+  result.then(data => {
+    res.json(
+      new this.SuccessModel(data)
+    )
+  }).catch(err => {
+    res.json(
+      new this.ErrorModel(err, err.message)
+    )
+  })
+});
+
+// 排行
+router.get('/ranking', function (req, res, next) {
+  let result = bookRanking(req.query)
+  let Ip = getIPAddress()
+  result.then(data => {
+    if (data.list.length) {
+      data.list.map(item => {
+        return item.images = `http://${Ip}:3000/upload${item.images}`
+      })
+    }
+    res.json(
+      new this.SuccessModel(data)
+    )
+  }).catch(err => {
+    res.json(
+      new this.ErrorModel(err, err.message)
+    )
+  })
+});
+
+
 
 module.exports = router

@@ -125,27 +125,46 @@ async function addcomment(req) {
 }
 
 // 获取个人书架
-// async function getUserBookshelf(req) {
-//   const user_id = req.user.id
-//   const userInfo = await exec(sql.table('users').where({ id: user_id }).field('collection_book_ids').select())
-//   const collection_book_ids = userInfo[0].collection_book_ids
-//   let bookids = []
-//   if (collection_book_ids) {
-//     bookids = userInfo[0].collection_book_ids.split(",");
-//   }
-//   if (bookids.length) {
-//     let data = bookids.map(async (item) => {
-//       let book_info = await exec(sql.table('book').where({ id: item }).select)
-//       return book_info[0]
-//     })
-//   } else {
-//     return Promise.resolve([])
-//   }
-// }
+async function deleteCollection(req) {
+  const user_id = req.user.id
+  const book_id = req.body.id
+  const userInfo = await exec(sql.table('user_info').where({ user_id: user_id }).field('collection_book_ids').select())
+  const collection_book_ids = userInfo[0].collection_book_ids
+  let bookids = []
+  let index
+  if (collection_book_ids) {
+    bookids = userInfo[0].collection_book_ids.split(",");
+    bookids.forEach((item, index) => {
+      if (book_id === item) {
+        index = index
+      }
+    })
+    bookids.splice(index, 1)
+  }
+  let bookStr = bookids.toString()
+  return exec(sql.table('user_info').data({ collection_book_ids: bookStr }).where({ user_id: user_id }).update())
+}
+
+
+async function bookRanking(query) {
+  const type = query.type ? query.type : "M"
+  let pageSize = query.pageSize ? query.pageSize : 20
+  let pageNum = query.pageNum ? query.pageNum : 1
+  let data = {}
+  let pagePromiste = await exec(sql.table('book').order('collection desc').where({ renqun_type: type }).page(pageNum, pageSize).select())
+  data.list = pagePromiste
+  let totalPromiste = await exec(sql.table('book').where({ renqun_type: type }).select())
+  data.totalPage = Math.ceil(totalPromiste.length / pageSize)
+  return Promise.resolve(data)
+}
+
+
 module.exports = {
   getBookDetail,
   getCollection,
   querySearch,
   addcomment,
   addBookshelf,
+  deleteCollection,
+  bookRanking
 }
