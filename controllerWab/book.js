@@ -88,9 +88,9 @@ async function addBookshelf(req) {
   }
 
   if (shelf) {
-    return Promise.resolve({ code: -1, message: "已在书架" })
+    return Promise.resolve(false)
   } else {
-    let ids = ''
+    let ids = `${book_id}`
     if (user_info[0].collection_book_ids) {
       ids = `${user_info[0].collection_book_ids},${book_id}`
     }

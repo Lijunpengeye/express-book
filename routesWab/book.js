@@ -54,9 +54,9 @@ router.get('/search', function (req, res, next) {
 router.post('/addbookshelf', function (req, res, next) {
   let result = addBookshelf(req)
   result.then(data => {
-    if (data.code === 0) {
+    if (data.affectedRows) {
       res.json(
-        new this.SuccessModel(data)
+        new this.SuccessModel()
       )
     } else {
       res.json(
