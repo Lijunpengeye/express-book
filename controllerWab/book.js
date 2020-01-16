@@ -148,12 +148,21 @@ async function deleteCollection(req) {
 
 async function bookRanking(query) {
   const type = query.type ? query.type : "M"
+  const is_free = query.is_free ? query.is_free : 0  //0不筛选  1免费 2付费
   let pageSize = query.pageSize ? query.pageSize : 20
   let pageNum = query.pageNum ? query.pageNum : 1
   let data = {}
-  let pagePromiste = await exec(sql.table('book').order('collection desc').where({ renqun_type: type }).page(pageNum, pageSize).select())
+  let parameter = {
+    renqun_type: type
+  }
+  if (parseInt(is_free) === 1) {
+    parameter.is_free = 'Y'
+  } else if (parseInt(is_free) === 2) {
+    parameter.is_free = 'N'
+  }
+  let pagePromiste = await exec(sql.table('book').order('collection desc').where(parameter).page(pageNum, pageSize).select())
   data.list = pagePromiste
-  let totalPromiste = await exec(sql.table('book').where({ renqun_type: type }).select())
+  let totalPromiste = await exec(sql.table('book').where(parameter).select())
   data.totalPage = Math.ceil(totalPromiste.length / pageSize)
   return Promise.resolve(data)
 }
