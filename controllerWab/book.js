@@ -145,28 +145,46 @@ async function deleteCollection(req) {
   return exec(sql.table('user_info').data({ collection_book_ids: bookStr }).where({ user_id: user_id }).update())
 }
 
-
-async function bookRanking(query) {
+// 书本列表
+async function bookList(query) {
   const type = query.type ? query.type : "M"
   const is_free = query.is_free ? query.is_free : 0  //0不筛选  1免费 2付费
   let pageSize = query.pageSize ? query.pageSize : 20
   let pageNum = query.pageNum ? query.pageNum : 1
   let data = {}
   let parameter = {
-    renqun_type: type
+    renqun_type: type,
+    is_display: 'Y'
   }
   if (parseInt(is_free) === 1) {
     parameter.is_free = 'Y'
   } else if (parseInt(is_free) === 2) {
     parameter.is_free = 'N'
   }
+  if (query.sortid) {
+    parameter.sortid = parseInt(query.sortid)
+  }
   let pagePromiste = await exec(sql.table('book').order('collection desc').where(parameter).page(pageNum, pageSize).select())
+  let sort = await exec(sql.table('sort').where().select())
+  pagePromiste.forEach(item => {
+    sort.forEach(s => {
+      if (item.sortid === s.id) {
+        item.sortname = s.sortname
+      }
+    })
+  })
   data.list = pagePromiste
   let totalPromiste = await exec(sql.table('book').where(parameter).select())
   data.totalPage = Math.ceil(totalPromiste.length / pageSize)
   return Promise.resolve(data)
 }
 
+// 获取分类详情
+async function getSortType() {
+  return exec(sql.table('sort').select()).then(data => {
+    return data
+  })
+}
 
 module.exports = {
   getBookDetail,
@@ -175,5 +193,6 @@ module.exports = {
   addcomment,
   addBookshelf,
   deleteCollection,
-  bookRanking
+  bookList,
+  getSortType
 }

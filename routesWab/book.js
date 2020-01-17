@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const { getBookDetail, getCollection, querySearch, addBookshelf, addcomment, deleteCollection, bookRanking } = require('../controllerWab/book')
+const { getBookDetail, getCollection, querySearch, addBookshelf, addcomment, deleteCollection, bookList, getSortType } = require('../controllerWab/book')
 const { getIPAddress } = require('../utils/common')
 
 // 获取书本详情
@@ -99,8 +99,8 @@ router.post('/deletecollection', function (req, res, next) {
 });
 
 // 排行
-router.get('/ranking', function (req, res, next) {
-  let result = bookRanking(req.query)
+router.get('/booklist', function (req, res, next) {
+  let result = bookList(req.query)
   let Ip = getIPAddress()
   result.then(data => {
     if (data.list.length) {
@@ -118,6 +118,14 @@ router.get('/ranking', function (req, res, next) {
   })
 });
 
+router.get('/sort', function (req, res, next) {
+  let result = getSortType()
+  result.then(data => {
+    res.json(
+      new this.SuccessModel(data)
+    )
+  })
+})
 
 
 module.exports = router
