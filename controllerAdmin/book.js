@@ -153,11 +153,11 @@ async function upChapter(req) {
     chapter_id: parseInt(req.body.chapter_id)
   }
   let updata = {
-    chaper_name: xss(req.body.chaper_name),
+    chapter_name: xss(req.body.chapter_name),
     order_num: xss(req.body.order_num),
     content: xss(req.body.content)
   }
-  return exec(sql.table('chapter').data(updata).where(params).field('book_id,chaper_name,chapter_id,content,order_num').update()).then(updateData => {
+  return exec(sql.table('chapter').data(updata).where(params).field('book_id,chapter_name,chapter_id,content,order_num').update()).then(updateData => {
     if (updateData.affectedRows > 0) {
       return true
     }
@@ -169,7 +169,7 @@ async function upChapter(req) {
 async function addChapter(req) {
   let data = {
     book_id: req.body.book_id,
-    chaper_name: xss(req.body.chaper_name),
+    chapter_name: xss(req.body.chapter_name),
     order_num: xss(req.body.order_num),
     content: xss(req.body.content),
     createtime: new Date()

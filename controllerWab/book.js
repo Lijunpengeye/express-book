@@ -17,6 +17,7 @@ async function getBookDetail(req) {
   const detail = await exec(_sql)
   const content = await exec(sql.table('book_comment').where({ book_id: book_id }).select())
   const user_info = await exec(sql.table('user_info').where({ user_id: user_id }).field('like_book_comment,collection_book_ids').select())
+  const chapters = await exec(sql.table('chapter').where({ book_id: book_id }).field('chapter_id,chapter_name,book_id').order('order_num desc').select())
   let bookshelf = false
   let likeId = []
   let collection_book_ids = []
@@ -46,7 +47,8 @@ async function getBookDetail(req) {
   let data = {
     detail: detail[0],
     content: content,
-    bookshelf: bookshelf
+    bookshelf: bookshelf,
+    chapters: chapters[0]
   }
   return Promise.resolve(data)
 }
@@ -180,11 +182,35 @@ async function bookList(query) {
 }
 
 // 获取分类详情
-async function getSortType() {
+async function getSortType(req) {
   return exec(sql.table('sort').select()).then(data => {
     return data
   })
 }
+
+// 获取书本章节列表
+async function getChapter(req) {
+  let params = {
+    book_id: req.query.bookid,
+    chapter_id: req.query.chapterid
+  }
+  return exec(sql.table('chapter').where(params).order('order_num').select()).then(data => {
+    return data[0]
+  })
+}
+
+
+// 获取书本章节列表
+async function getChapterList(req) {
+  let params = {
+    book_id: req.query.bookid
+  }
+  return exec(sql.table('chapter').where(params).order('order_num').select()).then(data => {
+    return data
+  })
+}
+
+
 
 module.exports = {
   getBookDetail,
@@ -194,5 +220,7 @@ module.exports = {
   addBookshelf,
   deleteCollection,
   bookList,
-  getSortType
+  getSortType,
+  getChapter,
+  getChapterList
 }
