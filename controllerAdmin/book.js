@@ -24,15 +24,14 @@ async function getBookList(query) {
 
 // 获取获取书本详情
 async function getBookDetails(id) {
-  return exec(sql.table('book').where({ id: id }).select()).then(data => {
-    return data[0]
-  })
-  // console.log('-------------', id)
-  // let sql = `select * from book where id=${id}`
-  // console.log(sql)
-  // return exec(sql).then(data => {
-  //   return data[0]
-  // })
+  let params = {}
+  let chapters = await exec(sql.table('chapter').where({ book_id: id }).order('order_num').select())
+  let book_info = await exec(sql.table('book').where({ id: id }).select())
+  params = {
+    detail: book_info[0],
+    chapters: chapters
+  }
+  return Promise.resolve(params)
 }
 
 
@@ -119,26 +118,7 @@ async function updateBook(query) {
     }
     return false
   })
-  // let sql = `
-  //       update book set 
-  //       bookname='${bookname}',
-  //       sortid=${sortid}, 
-  //       type=${type},
-  //       author='${author}',
-  //       description='${description}',`
-  // if (imageName) {
-  //   sql += ` images='${imageName}',`
-  // }
-  // sql += ` uptime=${uptime}
-  //       where id=${id}
-  //       `
-  // console.log(sql)
-  // return exec(sql).then(updateData => {
-  //   if (updateData.affectedRows > 0) {
-  //     return true
-  //   }
-  //   return false
-  // })
+
 }
 
 // 获取分类详情
@@ -155,6 +135,79 @@ async function getBookType() {
   })
 }
 
+// 获取某章节
+async function getChapter(req) {
+  let params = {
+    book_id: req.query.bookid,
+    chapter_id: req.query.chapterid
+  }
+  return exec(sql.table('chapter').where(params).select()).then(data => {
+    return data[0]
+  })
+}
+
+// 更新某章节
+async function upChapter(req) {
+  let params = {
+    book_id: parseInt(req.body.book_id),
+    chapter_id: parseInt(req.body.chapter_id)
+  }
+  let updata = {
+    chaper_name: xss(req.body.chaper_name),
+    order_num: xss(req.body.order_num),
+    content: xss(req.body.content)
+  }
+  return exec(sql.table('chapter').data(updata).where(params).field('book_id,chaper_name,chapter_id,content,order_num').update()).then(updateData => {
+    if (updateData.affectedRows > 0) {
+      return true
+    }
+    return false
+  })
+}
+
+// 新增章节
+async function addChapter(req) {
+  let data = {
+    book_id: req.body.book_id,
+    chaper_name: xss(req.body.chaper_name),
+    order_num: xss(req.body.order_num),
+    content: xss(req.body.content),
+    createtime: new Date()
+  }
+  return exec(sql.table('chapter').data(data).insert()).then(insertData => {
+    return {
+      id: insertData.insertId
+    }
+  })
+}
+
+// 更新某章节
+async function sortOrder(req) {
+  const orderNum = req.body.list
+  let upSql = `UPDATE chapter SET order_num = CASE chapter_id `
+  let whenSql = ``
+  let whereSql = ` WHERE chapter_id IN (`
+  orderNum.forEach((item, index) => {
+    whenSql += ` WHEN ${item.chapter_id} THEN ${item.order_num}  `
+    if (index === orderNum.length - 1) {
+      whereSql += item.chapter_id
+    } else {
+      whereSql += item.chapter_id + ','
+    }
+  })
+  whenSql += ` END `
+  whereSql += `)`
+  console.log(upSql + whenSql + whereSql, '------upSql + whenSql + whereSql')
+  return exec(upSql + whenSql + whereSql).then(updateData => {
+    console.log(updateData)
+    if (updateData.affectedRows > 0) {
+      return true
+    }
+    return false
+  })
+}
+
+
 module.exports = {
   getBookList,
   addBook,
@@ -163,4 +216,8 @@ module.exports = {
   updateBook,
   getSortType,
   getBookType,
+  getChapter,
+  upChapter,
+  addChapter,
+  sortOrder
 }

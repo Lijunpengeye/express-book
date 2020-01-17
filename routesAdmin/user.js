@@ -26,7 +26,7 @@ router.post('/admin/login', function (req, res, next) {
 
 
 router.get('/usersinfo', function (req, res, next) {
-  console.log(req.user.id, '--------------id')
+  // console.log(req.user.id, '--------------id')
   const result = uaersInfo(req)
   result.then(data => {
     if (data) {

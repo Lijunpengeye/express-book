@@ -1,6 +1,17 @@
 var express = require('express');
 var router = express.Router();
-const { getBookList, getBookDetails, addBook, updateType, updateBook, getSortType, getBookType } = require('../controllerAdmin/book')
+const {
+  getBookList,
+  getBookDetails,
+  addBook,
+  updateType,
+  updateBook,
+  getSortType,
+  getBookType,
+  getChapter,
+  upChapter,
+  addChapter,
+  sortOrder } = require('../controllerAdmin/book')
 
 
 /* GET home page. */
@@ -91,5 +102,43 @@ router.get('/booktype', function (req, res, next) {
     )
   })
 })
+
+router.get('/chapter', function (req, res, next) {
+  let result = getChapter(req)
+  result.then(data => {
+    res.json(
+      new this.SuccessModel(data)
+    )
+  })
+})
+
+router.post('/upchapter', function (req, res, next) {
+  let result = upChapter(req)
+  result.then(data => {
+    res.json(
+      new this.SuccessModel(data)
+    )
+  })
+})
+
+
+router.post('/addchapter', function (req, res, next) {
+  let result = addChapter(req)
+  result.then(data => {
+    res.json(
+      new this.SuccessModel(data)
+    )
+  })
+})
+
+router.post('/sortorder', function (req, res, next) {
+  let result = sortOrder(req)
+  result.then(data => {
+    res.json(
+      new this.SuccessModel(data)
+    )
+  })
+})
+
 
 module.exports = router;
