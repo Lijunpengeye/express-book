@@ -48,7 +48,7 @@ async function getBookDetail(req) {
     detail: detail[0],
     content: content,
     bookshelf: bookshelf,
-    chapters: chapters[0]
+    chapters: [chapters[0], chapters[chapters.length - 1]]
   }
   return Promise.resolve(data)
 }
