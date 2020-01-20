@@ -41,6 +41,43 @@ async function wabLogin(username, password) {
   })
 }
 
+async function registerUser(req) {
+  let { username, password, nickname, qq } = req.body
+  const createtime = new Date()
+  const genpassword = genPassword(password)
+  if (!username) {
+    return false;
+  } else if (!password) {
+    return false;
+  } else if (!nickname) {
+    return false;
+  } else if (!qq) {
+    return false;
+  } else {
+    let params = {
+      username: username,
+      password: genpassword,
+      nickname: nickname,
+      qq: qq,
+      createtime: createtime
+    }
+    let user = await exec(sql.table('users').where({ username: username }).select())
+    if (user.length) {
+      return Promise.reject({ message: "该用户已存在" })
+    }
+    return exec(sql.table('users').data(params).insert()).then(async (insertData) => {
+      if (insertData.insertId) {
+        let user_info = await exec(sql.table('user_info').data({ user_id: insertData.insertId }).insert())
+        return wabLogin(username, password)
+      }
+    })
+  }
+}
+
+
+
+
+
 async function getUserInfo(req) {
   let id = req.user.id
   return exec(sql.table('users').where({ id: id }).field('username,nickname,account,is_vip').select())
@@ -127,5 +164,6 @@ module.exports = {
   wabLogin,
   getUserInfo,
   buyBook,
-  changeLike
+  changeLike,
+  registerUser
 }

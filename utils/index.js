@@ -10,7 +10,8 @@ const jwtAuth = expressJwt({ secret: secretKey }).unless({
     '/wab/book/search',
     '/wab/book/ranking',
     '/wab/index/banner',
-    '/wab/index/booklist'
+    '/wab/index/booklist',
+    '/wab/user/register'
   ]
 })
 module.exports = {

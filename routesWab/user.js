@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const { wabLogin, getUserInfo, buyBook, changeLike } = require('../controllerWab/user')
+const { wabLogin, getUserInfo, buyBook, changeLike, registerUser } = require('../controllerWab/user')
 
 // 用户登陆
 router.post('/login', function (req, res, next) {
@@ -55,15 +55,35 @@ router.post('/buy', function (req, res, next) {
 router.post('/commentlike', function (req, res, next) {
   let result = changeLike(req)
   result.then(data => {
-    console.log(data, '-------data')
     res.json(
       new this.SuccessModel(data)
     )
   }).catch(err => {
-    console.log(err, '-------err')
     res.json(
       new this.ErrorModel(err, err.message)
     )
   })
 });
+
+// 注册
+router.post('/register', function (req, res, next) {
+  let result = registerUser(req)
+  result.then(data => {
+    if (data.token) {
+      res.json(
+        new this.SuccessModel(data)
+      )
+    } else {
+      res.json(
+        new this.ErrorModel(data, '操作失败')
+      )
+    }
+  }).catch(err => {
+    res.json(
+      new this.ErrorModel(err, err.message)
+    )
+  })
+});
+
+
 module.exports = router
