@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
-const { wabLogin, getUserInfo, buyBook, changeLike, registerUser } = require('../controllerWab/user')
+const { wabLogin, getUserInfo, buyBook, changeLike, registerUser, modifyUserInfo } = require('../controllerWab/user')
+const { getIPAddress } = require('../utils/common')
 
 // 用户登陆
 router.post('/login', function (req, res, next) {
@@ -23,8 +24,10 @@ router.post('/login', function (req, res, next) {
 // 获取用户信息
 router.get('/userinfo', function (req, res, next) {
   const result = getUserInfo(req)
+  let Ip = getIPAddress()
   result.then(data => {
     if (data) {
+      data[0].head_portrait = `http://${Ip}:3000/upload${data[0].head_portrait}`
       res.json(
         new this.SuccessModel(data[0])
       )
@@ -84,6 +87,28 @@ router.post('/register', function (req, res, next) {
     )
   })
 });
+
+
+// 修改注册信息
+router.post('/modifyregister', function (req, res, next) {
+  let result = modifyUserInfo(req)
+  result.then(data => {
+    if (data) {
+      res.json(
+        new this.SuccessModel(data)
+      )
+    } else {
+      res.json(
+        new this.ErrorModel(data, '操作失败')
+      )
+    }
+  }).catch(err => {
+    res.json(
+      new this.ErrorModel(err, err.message)
+    )
+  })
+});
+
 
 
 module.exports = router

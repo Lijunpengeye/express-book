@@ -74,13 +74,35 @@ async function registerUser(req) {
   }
 }
 
-
-
-
+async function modifyUserInfo(req) {
+  let { password, originalPassword } = req.body
+  if (!password) {
+    return false;
+  } else if (!originalPassword) {
+    return false;
+  } else {
+    let user_id = req.user.id
+    let pass = genPassword(originalPassword)
+    let user_info = await exec(sql.table('users').where({ id: user_id, password: pass }).select())
+    if (user_info.length) {
+      let params = {
+        password: genPassword(password)
+      }
+      return exec(sql.table('users').data(params).where({ id: user_id }).update()).then(updateData => {
+        if (updateData.affectedRows > 0) {
+          return true
+        }
+        return false
+      })
+    } else {
+      return false
+    }
+  }
+}
 
 async function getUserInfo(req) {
   let id = req.user.id
-  return exec(sql.table('users').where({ id: id }).field('username,nickname,account,is_vip').select())
+  return exec(sql.table('users').where({ id: id }).field('username,nickname,account,is_vip,head_portrait').select())
 }
 
 async function changeLike(res) {
@@ -165,5 +187,6 @@ module.exports = {
   getUserInfo,
   buyBook,
   changeLike,
-  registerUser
+  registerUser,
+  modifyUserInfo
 }
