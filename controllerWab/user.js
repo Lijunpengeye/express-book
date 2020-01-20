@@ -59,7 +59,8 @@ async function registerUser(req) {
       password: genpassword,
       nickname: nickname,
       qq: qq,
-      createtime: createtime
+      createtime: createtime,
+      head_portrait: "/avatar_21.jpg"
     }
     let user = await exec(sql.table('users').where({ username: username }).select())
     if (user.length) {
