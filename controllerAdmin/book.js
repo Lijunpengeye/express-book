@@ -155,7 +155,7 @@ async function upChapter(req) {
   let updata = {
     chapter_name: xss(req.body.chapter_name),
     order_num: xss(req.body.order_num),
-    content: xss(req.body.content)
+    content: req.body.content
   }
   return exec(sql.table('chapter').data(updata).where(params).field('book_id,chapter_name,chapter_id,content,order_num').update()).then(updateData => {
     if (updateData.affectedRows > 0) {
