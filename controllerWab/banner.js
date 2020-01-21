@@ -5,7 +5,7 @@ const xss = require('xss')
 async function getBanner(query) {
   let pageSize = query.pageSize ? query.pageSize : 5
   let pageNum = query.pageNum ? query.pageNum : 1
-  return exec(sql.table('banner').page(pageNum, pageSize).select())
+  return exec(sql.table('banner').where({ is_display: "Y" }).page(pageNum, pageSize).select())
 }
 
 module.exports = {

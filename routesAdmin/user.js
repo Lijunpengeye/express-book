@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const { adminLogin, uaersInfo } = require('../controllerAdmin/user')
+const { adminLogin, uaersInfo, usersList } = require('../controllerAdmin/user')
 
 /* GET users listing. */
 // router.get('/', function (req, res, next) {
@@ -40,5 +40,21 @@ router.get('/usersinfo', function (req, res, next) {
     }
   })
 });
+
+router.get('/userslist', function (req, res, next) {
+  const result = usersList(req)
+  result.then(data => {
+    if (data) {
+      res.json(
+        new this.SuccessModel(data)
+      )
+    } else {
+      res.json(
+        new this.ErrorModel(data, '操作失败')
+      )
+    }
+  })
+});
+
 
 module.exports = router;

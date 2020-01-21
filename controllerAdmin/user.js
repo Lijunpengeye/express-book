@@ -49,7 +49,19 @@ async function uaersInfo(req) {
   })
 }
 
+async function usersList(req) {
+  let pageSize = req.query.pageSize ? req.query.pageSize : 20
+  let pageNum = req.query.pageNum ? req.query.pageNum : 1
+  let data = {}
+  let pagePromiste = await exec(sql.table('users').field('id,username,qq,nickname,head_portrait,account,logintime,is_vip').page(pageNum, pageSize).select())
+  let totalPromiste = await exec(sql.table('users').where().select())
+  data.list = pagePromiste
+  data.total = totalPromiste.length
+  return Promise.resolve(data)
+}
+
 module.exports = {
   adminLogin,
-  uaersInfo
+  uaersInfo,
+  usersList
 }
