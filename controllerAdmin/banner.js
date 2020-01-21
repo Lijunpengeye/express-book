@@ -72,7 +72,7 @@ async function updateIsDisplay(query) {
   const parameter = {
     is_display: xss(query.is_display),
   }
-  return exec(sql.table('banner').data({ is_display: xss(query.is_display) }).where({ id: id }).update()).then(updateData => {
+  return exec(sql.table('banner').data(parameter).where({ id: id }).update()).then(updateData => {
     if (updateData.affectedRows > 0) {
       return true
     }
