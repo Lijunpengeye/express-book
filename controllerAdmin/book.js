@@ -174,6 +174,13 @@ async function addChapter(req) {
     content: xss(req.body.content),
     createtime: new Date()
   }
+  // exec(sql.table('book').select()).then(bookData => {
+  //   console.log(bookData)
+  //   bookData.forEach(i=>{
+  //     data.book_id = i.id
+  //     exec(sql.table('chapter').data(data).insert())
+  //   })
+  // })
   return exec(sql.table('chapter').data(data).insert()).then(insertData => {
     return {
       id: insertData.insertId

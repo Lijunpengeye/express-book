@@ -39,7 +39,7 @@ app.use(jwtAuth)
 app.use(function (err, req, res, next) {
   if (err.status == 401) {
     res.json(
-      new this.ErrorModel({}, 'token失效，请重新登录！', 401)
+      new this.ErrorModel({}, '请登录！', 401)
     )
   }
 });

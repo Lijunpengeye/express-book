@@ -119,6 +119,12 @@ async function addcomment(req) {
     createtime: createtime,
     head_portrait: head_portrait
   }
+  // exec(sql.table('book').select()).then(bookData => {
+  //   bookData.forEach(i=>{
+  //     data.book_id = i.id
+  //     exec(sql.table('book_comment').data(data).insert())
+  //   })
+  // })
   return exec(sql.table('book_comment').data(data).insert()).then(insertData => {
     return {
       id: insertData.insertId
