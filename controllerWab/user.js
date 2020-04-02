@@ -4,41 +4,53 @@ const { genPassword } = require('../utils/cryp')
 const { secretKey } = require('../utils/index')
 const jwt = require('jsonwebtoken')
 
-
 async function wabLogin(username, password) {
   username = username
   // 生成加密密码
   password = genPassword(password)
-  console.log(username, password)
   let logintime = new Date()
   let promiste = {
     username: username,
-    password: password,
+    password: password
   }
-  return exec(sql.table('users').where(promiste).select()).then(data => {
-    if (data.length > 0) {
-      let userInfo = data[0]
-      let tokenObj = {   //携带参数
-        id: userInfo.id,
-        username: userInfo.uasername
+  return exec(
+    sql
+      .table('users')
+      .where(promiste)
+      .select()
+  )
+    .then(data => {
+      if (data.length > 0) {
+        let userInfo = data[0]
+        let tokenObj = {
+          //携带参数
+          id: userInfo.id,
+          username: userInfo.uasername
+        }
+        let tokenKey = secretKey //加密内容
+        let token = jwt.sign(tokenObj, tokenKey, {
+          expiresIn: 3600 * 3 // token时长
+        })
+        token = 'Bearer ' + token
+        let parameter = {
+          token: token
+        }
+        exec(
+          sql
+            .table('users')
+            .data({ logintime: logintime })
+            .where({ id: userInfo.id })
+            .update()
+        )
+        return Promise.resolve(parameter)
+        // return true
+      } else {
+        return false
       }
-      let tokenKey = secretKey  //加密内容
-      let token = jwt.sign(tokenObj, tokenKey, {
-        expiresIn: 3600 * 3  // token时长
-      })
-      token = 'Bearer ' + token
-      let parameter = {
-        token: token
-      }
-      exec(sql.table('users').data({ logintime: logintime }).where({ id: userInfo.id }).update())
-      return Promise.resolve(parameter)
-      // return true
-    } else {
-      return false
-    }
-  }).catch(err => {
-    console.log(err)
-  })
+    })
+    .catch(err => {
+      console.log(err)
+    })
 }
 
 async function registerUser(req) {
@@ -46,13 +58,13 @@ async function registerUser(req) {
   const createtime = new Date()
   const genpassword = genPassword(password)
   if (!username) {
-    return false;
+    return false
   } else if (!password) {
-    return false;
+    return false
   } else if (!nickname) {
-    return false;
+    return false
   } else if (!qq) {
-    return false;
+    return false
   } else {
     let params = {
       username: username,
@@ -60,15 +72,30 @@ async function registerUser(req) {
       nickname: nickname,
       qq: qq,
       createtime: createtime,
-      head_portrait: "/avatar_21.jpg"
+      head_portrait: '/avatar_21.jpg'
     }
-    let user = await exec(sql.table('users').where({ username: username }).select())
+    let user = await exec(
+      sql
+        .table('users')
+        .where({ username: username })
+        .select()
+    )
     if (user.length) {
-      return Promise.reject({ message: "该用户已存在" })
+      return Promise.reject({ message: '该用户已存在' })
     }
-    return exec(sql.table('users').data(params).insert()).then(async (insertData) => {
+    return exec(
+      sql
+        .table('users')
+        .data(params)
+        .insert()
+    ).then(async insertData => {
       if (insertData.insertId) {
-        let user_info = await exec(sql.table('user_info').data({ user_id: insertData.insertId }).insert())
+        let user_info = await exec(
+          sql
+            .table('user_info')
+            .data({ user_id: insertData.insertId })
+            .insert()
+        )
         return wabLogin(username, password)
       }
     })
@@ -78,18 +105,29 @@ async function registerUser(req) {
 async function modifyUserInfo(req) {
   let { password, originalPassword } = req.body
   if (!password) {
-    return false;
+    return false
   } else if (!originalPassword) {
-    return false;
+    return false
   } else {
     let user_id = req.user.id
     let pass = genPassword(originalPassword)
-    let user_info = await exec(sql.table('users').where({ id: user_id, password: pass }).select())
+    let user_info = await exec(
+      sql
+        .table('users')
+        .where({ id: user_id, password: pass })
+        .select()
+    )
     if (user_info.length) {
       let params = {
         password: genPassword(password)
       }
-      return exec(sql.table('users').data(params).where({ id: user_id }).update()).then(updateData => {
+      return exec(
+        sql
+          .table('users')
+          .data(params)
+          .where({ id: user_id })
+          .update()
+      ).then(updateData => {
         if (updateData.affectedRows > 0) {
           return true
         }
@@ -103,37 +141,74 @@ async function modifyUserInfo(req) {
 
 async function getUserInfo(req) {
   let id = req.user.id
-  return exec(sql.table('users').where({ id: id }).field('username,nickname,account,is_vip,head_portrait').select())
+  return exec(
+    sql
+      .table('users')
+      .where({ id: id })
+      .field('username,nickname,account,is_vip,head_portrait')
+      .select()
+  )
 }
 
 async function changeLike(res) {
-  let comment_id = res.body.comment_id
-  let user_id = res.user.id
-  let user_info = await exec(sql.table('user_info').where({ user_id: user_id }).field('like_book_comment').select())
-  let book_comment = await exec(sql.table('book_comment').where({ comment_id: comment_id }).select())
-  let likeNum = book_comment[0].like_number + 1
-  console.log(book_comment)
-  let like = user_info[0].like_book_comment
-  if (like) {
-    like += `,${comment_id}`
-  } else {
-    like = comment_id
+  const book_comment_id = res.body.comment_id
+  const user_id = res.user.id
+  const book_id = res.body.book_id
+  const createtime = new Date()
+  let params = {
+    book_comment_id,
+    user_id
   }
-  exec(sql.table('user_info').data({ like_book_comment: like }).where({ user_id: user_id }).update()).then(data => {
-    return exec(sql.table('book_comment').data({ like_number: likeNum }).where({ comment_id: comment_id }).update())
+  let likes = await exec(
+    sql
+      .table('user_book_comment')
+      .where(params)
+      .select()
+  )
+  if (likes.length) return true
+  let data = {
+    book_comment_id: book_comment_id,
+    user_id: user_id,
+    createtime: createtime,
+    book_id: book_id
+  }
+  return exec(
+    sql
+      .table('user_book_comment')
+      .data(data)
+      .insert()
+  ).then(insert => {
+    return insert.insertId
   })
 }
-
 
 async function buyBook(req) {
   return new Promise(async (resolve, reject) => {
     const id = req.user.id
     const book_id = req.body.book_id
-    let userInfo = await exec(sql.table('users').where({ id: id }).field('account,is_vip').select())
+    let userInfo = await exec(
+      sql
+        .table('users')
+        .where({ id: id })
+        .field('account,is_vip')
+        .select()
+    )
     const account = userInfo[0].account
     const vip = userInfo[0].is_vip
-    let bookInfo = await exec(sql.table('book').where({ id: book_id }).field('price,vip_price').select())
-    let buy_book_ids = await exec(sql.table('user_info').where({ user_id: id }).field('buy_book_ids').select())
+    let bookInfo = await exec(
+      sql
+        .table('book')
+        .where({ id: book_id })
+        .field('price,vip_price')
+        .select()
+    )
+    let buy_book_ids = await exec(
+      sql
+        .table('user_info')
+        .where({ user_id: id })
+        .field('buy_book_ids')
+        .select()
+    )
     buy_book_ids = buy_book_ids[0].buy_book_ids
     const price = bookInfo[0].price
     const vip_price = bookInfo[0].vip_price
@@ -164,11 +239,27 @@ async function buyBook(req) {
       order_money: buy_price,
       order_number: randomNumber()
     }
-    console.log(parameter.order_number)
     const balance = account - buy_price
-    exec(sql.table('users').data({ account: balance }).where({ id: id }).update()).then(async (data) => {
-      let upinfo = await exec(sql.table('user_info').data({ buy_book_ids: buy_book_ids }).where({ user_id: id }).update())
-      let order = await exec(sql.table('buy_order').data(parameter).insert())
+    exec(
+      sql
+        .table('users')
+        .data({ account: balance })
+        .where({ id: id })
+        .update()
+    ).then(async data => {
+      let upinfo = await exec(
+        sql
+          .table('user_info')
+          .data({ buy_book_ids: buy_book_ids })
+          .where({ user_id: id })
+          .update()
+      )
+      let order = await exec(
+        sql
+          .table('buy_order')
+          .data(parameter)
+          .insert()
+      )
       if (upinfo && order) {
         resolve({ message: '购买成功' })
       }
@@ -178,9 +269,9 @@ async function buyBook(req) {
 function randomNumber() {
   let outTradeNo = ''
   for (var i = 0; i < 6; i++) {
-    outTradeNo += Math.floor(Math.random() * 10);
+    outTradeNo += Math.floor(Math.random() * 10)
   }
-  outTradeNo = new Date().getTime() + outTradeNo;
+  outTradeNo = new Date().getTime() + outTradeNo
   return outTradeNo
 }
 module.exports = {

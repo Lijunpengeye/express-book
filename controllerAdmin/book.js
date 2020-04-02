@@ -17,7 +17,12 @@ async function getBookList(query) {
   let data = {}
   let pagePromiste = await exec(pageSql)
   data.list = pagePromiste
-  let totalPromiste = await exec(sql.table('book').where().select())
+  let totalPromiste = await exec(
+    sql
+      .table('book')
+      .where()
+      .select()
+  )
   data.total = totalPromiste.length
   return Promise.resolve(data)
 }
@@ -25,15 +30,25 @@ async function getBookList(query) {
 // 获取获取书本详情
 async function getBookDetails(id) {
   let params = {}
-  let chapters = await exec(sql.table('chapter').where({ book_id: id }).order('order_num').select())
-  let book_info = await exec(sql.table('book').where({ id: id }).select())
+  let chapters = await exec(
+    sql
+      .table('chapter')
+      .where({ book_id: id })
+      .order('order_num')
+      .select()
+  )
+  let book_info = await exec(
+    sql
+      .table('book')
+      .where({ id: id })
+      .select()
+  )
   params = {
     detail: book_info[0],
     chapters: chapters
   }
   return Promise.resolve(params)
 }
-
 
 // 新增书本
 async function addBook(query) {
@@ -54,7 +69,12 @@ async function addBook(query) {
     parameter.price = xss(query.price)
     parameter.vip_price = xss(query.vip_price)
   }
-  return exec(sql.table('book').data(parameter).insert()).then(insertData => {
+  return exec(
+    sql
+      .table('book')
+      .data(parameter)
+      .insert()
+  ).then(insertData => {
     return {
       id: insertData.insertId
     }
@@ -74,14 +94,20 @@ async function addBook(query) {
 // 更新上架状态
 async function updateType(query) {
   let { id } = query
-  return exec(sql.table('book').data({ is_display: xss(query.is_display) }).where({ id: id }).update()).then(updateData => {
+  return exec(
+    sql
+      .table('book')
+      .data({ is_display: xss(query.is_display) })
+      .where({ id: id })
+      .update()
+  ).then(updateData => {
     if (updateData.affectedRows > 0) {
       return true
     }
     return false
   })
   // const sql = `
-  //       update book set type=${type} where id=${id} 
+  //       update book set type=${type} where id=${id}
   //   `
   // return exec(sql).then(updateData => {
   //   if (updateData.affectedRows > 0) {
@@ -90,7 +116,6 @@ async function updateType(query) {
   //   return false
   // })
 }
-
 
 // 更新书本信息
 async function updateBook(query) {
@@ -112,13 +137,18 @@ async function updateBook(query) {
     parameter.vip_price = xss(query.vip_price)
   }
   if (imageName) parameter.images = imageName
-  return exec(sql.table('book').data(parameter).where({ id: id }).update()).then(updateData => {
+  return exec(
+    sql
+      .table('book')
+      .data(parameter)
+      .where({ id: id })
+      .update()
+  ).then(updateData => {
     if (updateData.affectedRows > 0) {
       return true
     }
     return false
   })
-
 }
 
 // 获取分类详情
@@ -141,7 +171,12 @@ async function getChapter(req) {
     book_id: req.query.bookid,
     chapter_id: req.query.chapterid
   }
-  return exec(sql.table('chapter').where(params).select()).then(data => {
+  return exec(
+    sql
+      .table('chapter')
+      .where(params)
+      .select()
+  ).then(data => {
     return data[0]
   })
 }
@@ -157,7 +192,14 @@ async function upChapter(req) {
     order_num: xss(req.body.order_num),
     content: req.body.content
   }
-  return exec(sql.table('chapter').data(updata).where(params).field('book_id,chapter_name,chapter_id,content,order_num').update()).then(updateData => {
+  return exec(
+    sql
+      .table('chapter')
+      .data(updata)
+      .where(params)
+      .field('book_id,chapter_name,chapter_id,content,order_num')
+      .update()
+  ).then(updateData => {
     if (updateData.affectedRows > 0) {
       return true
     }
@@ -174,7 +216,12 @@ async function addChapter(req) {
     content: xss(req.body.content),
     createtime: new Date()
   }
-  return exec(sql.table('chapter').data(data).insert()).then(insertData => {
+  return exec(
+    sql
+      .table('chapter')
+      .data(data)
+      .insert()
+  ).then(insertData => {
     return {
       id: insertData.insertId
     }
@@ -206,7 +253,6 @@ async function sortOrder(req) {
     return false
   })
 }
-
 
 module.exports = {
   getBookList,
